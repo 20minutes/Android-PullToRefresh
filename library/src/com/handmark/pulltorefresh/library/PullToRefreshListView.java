@@ -277,6 +277,7 @@ public class PullToRefreshListView extends PullToRefreshAdapterViewBase<ListView
 	protected class InternalListView extends ListView implements EmptyViewMethodAccessor {
 
 		private boolean mAddedLvFooter = false;
+		private float firstX, firstY;
 
 		public InternalListView(Context context, AttributeSet attrs) {
 			super(context, attrs);
@@ -330,6 +331,22 @@ public class PullToRefreshListView extends PullToRefreshAdapterViewBase<ListView
 		@Override
 		public void setEmptyViewInternal(View emptyView) {
 			super.setEmptyView(emptyView);
+		}
+
+		@Override
+		public boolean onInterceptTouchEvent(MotionEvent ev) {
+			switch (ev.getAction()) {
+			case MotionEvent.ACTION_DOWN:
+				firstX = ev.getX();
+				firstY = ev.getY();
+				break;
+			case MotionEvent.ACTION_MOVE:
+				final float xDistance = Math.abs(ev.getX() - firstX);
+				final float yDistance = Math.abs(ev.getY() - firstY);
+				if (xDistance > yDistance)
+					return false;
+			}
+			return super.onInterceptTouchEvent(ev);
 		}
 
 	}
